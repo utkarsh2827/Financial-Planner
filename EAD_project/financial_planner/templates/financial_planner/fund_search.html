@@ -1,0 +1,50 @@
+{% extends "financial_planner/base.html" %}
+{% block content %}
+<section>
+    <div class = "section-title"> <h4><strong>Silver Rated Funds</strong></h4>
+    <p class = 'text-muted'> By MorningStar</p>
+    </div>
+    <div class = "container">
+        {{table|safe}}
+    </div>
+</section>
+    <script type="text/javascript">
+        window.onload = alert('Mutual Fund investments are subject to market risk. Please read the offer document carefully before investing');
+        var table = document.querySelectorAll('.fundsArchive table')[0];
+        table.className = 'table table-bordered table-striped';
+        table.getElementsByTagName('colgroup')[0].remove();
+        table.getElementsByTagName('thead')[0].className = 'thead-dark';
+        var col4h = document.querySelector('.border2px:nth-child(4)');
+        var col5h = document.querySelector('.border2px:nth-child(5)');
+        var col3h = document.querySelector('.border2px:nth-child(3)');
+        col3h.remove();
+        col4h.remove();
+        col5h.remove();
+        var td6 = document.querySelectorAll('.fundsArchive td:nth-child(6)');
+        for(var i =0;i<td6.length;i++){
+            var alt = td6[i].getElementsByTagName('img')[0].getAttribute('alt');
+            td6[i].innerHTML = alt;
+        
+        }
+        var td1 = document.querySelectorAll('.fundsArchive td:nth-child(1)') ;
+        for(var i = 0;i<td1.length;i++){
+            var a = td1[i].getElementsByTagName('a')[0];
+            var span = td1[i].getElementsByTagName('span');
+            if(span.length>0){
+                span[0].remove();
+            }
+            a.href = '';
+        }  
+        var td3 = document.querySelectorAll('.fundsArchive td:nth-child(3)');
+        console.log(td3);
+        var td4 = document.querySelectorAll('.fundsArchive td:nth-child(4)');
+        var td5 = document.querySelectorAll('.fundsArchive td:nth-child(5)');
+        for(var i = 0;i<td3.length;i++){
+            td3[i].remove();
+            td4[i].remove();
+            td5[i].remove();
+        }
+        
+
+    </script>
+{% endblock content %}

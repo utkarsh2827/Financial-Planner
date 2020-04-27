@@ -1,0 +1,17 @@
+{% extends "financial_planner/base.html" %}
+{% block content %}
+    <h2>Delete Post</h2>
+    <div class = "section border-top">
+        <div class = "container text-center">
+            <p><br></p>
+            <form method="POST">
+                {% csrf_token %}
+                    <h5>Are you sure that you want to delete the Stock from portfolio "{{object.name}}"</h5>
+                <div class = "form-group text-center">
+                    <button class = "btn btn-outline-danger" type = "submit">Yes,Delete</button>
+                    <a class = "btn btn-outline-secondary" href = "{% url 'financial_planner-portfolio-list'%}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

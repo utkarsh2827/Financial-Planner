@@ -1,15 +1,229 @@
-{% extends "financial_planner/base.html" %}
-{% block content %}
-    {% for post in posts %}
-        <article class="media content-section">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="#">{{ post.author }}</a>
-              <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
-            </div>
-            <h2><a class="article-title" href="#">{{ post.title }}</a></h2>
-            <p class="article-content">{{ post.content }}</p>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>PMS</title>
+  <meta content="" name="descriptison">
+  <meta content="" name="keywords">
+  <style>
+    .field-tip {
+      position:relative;
+    }
+  .field-tip .tip-content {
+      position:absolute;
+      top:-22px; /* - top padding */
+      right:9999px;
+      width:200px;
+      margin-right:-220px; /* width + left/right padding */
+      padding:10px;
+      color:#fff;
+      background:#333;
+      -webkit-box-shadow:2px 2px 5px #aaa;
+         -moz-box-shadow:2px 2px 5px #aaa;
+              box-shadow:2px 2px 5px #aaa;
+      opacity:0;
+      -webkit-transition:opacity 250ms ease-out;
+         -moz-transition:opacity 250ms ease-out;
+          -ms-transition:opacity 250ms ease-out;
+           -o-transition:opacity 250ms ease-out;
+              transition:opacity 250ms ease-out;
+  }
+/* <http://css-tricks.com/snippets/css/css-triangle/> */
+.field-tip .tip-content:before {
+    content:' '; /* Must have content to display */
+    position:absolute;
+    top:50%;
+    left:-16px; /* 2 x border width */
+    width:0;
+    height:0;
+    margin-top:-8px; /* - border width */
+    border:8px solid transparent;
+    border-right-color:#333;
+}
+.field-tip:hover .tip-content {
+    right:-20px;
+    opacity:1;
+}
+  </style>
+  <!-- Favicons -->
+  <link href="{%static 'financial_planner/assets/img/favicon.png'%}" rel="icon">
+  <link href="{%static 'financial_planner/assets/img/apple-touch-icon.png'%}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{%static 'financial_planner/assets/vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+  <link href="{%static 'financial_planner/assets/vendor/icofont/icofont.min.css'%}" rel="stylesheet">
+  <link href="{%static 'financial_planner/assets/vendor/boxicons/css/boxicons.min.css'%}" rel="stylesheet">
+  <link href="{%static 'financial_planner/assets/vendor/venobox/venobox.css'%}" rel="stylesheet">
+  <link href="{%static 'financial_planner/assets/vendor/owl.carousel/assets/owl.carousel.min.css'%}" rel="stylesheet">
+  <link href="{%static 'financial_planner/assets/vendor/aos/aos.css'%}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{%static 'financial_planner/assets/css/style.css'%}" rel="stylesheet">
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- ======= Hero Section ======= -->
+    <section id="hero">
+      <div class="hero-container" data-aos="fade-up">
+        <h1>Start your new digital experience with <span>PMS</span></h1>
+        <h2>Manage your equities and mutual funds easily</h2>
+        <a href="{%url 'login' %}" class="btn-get-started scrollto">Get Started</a>
+      </div>
+    </section><!-- End Hero -->
+
+    <!-- ======= Header ======= -->
+    <header id="header" class="d-flex align-items-center">
+      <div class="container d-flex align-items-center">
+
+        <div class="logo mr-auto">
+          <h1 class="text-light"><a href="{% url 'financial_planner-home' %}"><span>Financial Planner</span></a></h1>
+          <!-- Uncomment below if you prefer to use an image logo -->
+          <!-- <a href="index.html"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+        </div>
+
+        <nav class="nav-menu d-none d-lg-block">
+          <ul>
+            <li class="active"><a href="{% url 'financial_planner-home' %}">Home</a></li>
+            <li><a href="{% url 'financial_planner-about' %}">About</a></li>
+            <li class = "drop-down"><a href="">Portfolio</a>
+              <ul>
+                <li><a href="{% url 'financial_planner-portfolio-list' %}">Your Portfolio</a></li>
+                <li>
+                  <div class = "field-tip">
+                    <a href="{% url 'portfolio_opt' %}">Optimal Stock Selection</a>
+                    <span class="tip-content"><small>Choose your % investment in<br>different stocks using our<br> algorithm.</small></span>
+                  </div>
+                </li>
+              </ul>
+            </li>
+            <li class = "drop-down"><a href="">Search</a>
+              <ul>
+                <li><a href="{% url 'financial_planner-stock-search' %}">Stock</a></li>
+                <li><a href="{% url 'financial_planner-fund-search' %}">Mutual Funds</a></li>
+              </ul>
+            </li>
+            {% if user.is_authenticated %}
+              <li><a href = "{% url 'profile'%}">Profile</a></li>
+              <li><a href="{% url 'logout' %}">Logout</a></li>
+            {% else %}
+              <li><a href = "{% url 'register'%}">Register</a></li>
+              <li><a href="{% url 'login' %}">Login</a></li>
+            {% endif %}
+          </ul>
+        </nav><!-- .nav-menu -->
+      </div>
+    </header><!-- End Header -->
+
+      <!-- ======= Contact Us Section ======= -->
+      <section id="contact" class="contact">
+        <div class="container">
+
+          <div class="section-title" data-aos="fade-down">
+            <span>Contact Us</span>
+            <h2>Contact Us</h2>
           </div>
-        </article>
-    {% endfor %}
-{% endblock content %}
+
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-12" data-aos="fade-up" data-aos-delay="100">
+              <div class="info-box">
+                <i class="bx bx-map"></i>
+                <h3>Our Address</h3>
+                <p>Punjab Engineering College, Chandigarh</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="200">
+              <div class="info-box">
+                <i class="bx bx-envelope"></i>
+                <h3>Email Us</h3>
+                <p>utkarshnigam.be18cse@pec.edu.in<br>hardik.grover@useless.com</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="300">
+              <div class="info-box">
+                <i class="bx bx-phone-call"></i>
+                <h3>Call Us</h3>
+                <p>+91 8299293289</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section><!-- End Contact Us Section -->
+
+    </main><!-- End #main -->
+
+    <!-- ======= Footer ======= -->
+    <footer id="footer">
+
+     
+
+      <div class="footer-top">
+        <div class="container">
+          <div class="row">
+
+            <div class="footer-contact">
+              <h3>Portfolio Management System</h3>
+              <p>
+                Punjab Engineering College, <br>
+                Chandigarh,<br>
+                India <br><br>
+                <strong>Phone:</strong> +91 8299293289<br>
+                <strong>Email:</strong> utkarshnigam.be18cse@pec.edu.in<br>
+              </p>
+            </div>
+            <div class="col-lg-3 footer-links">
+            </div>
+            <div class="col-lg-3 footer-links">
+              <h4>Useful Links</h4>
+              <ul>
+                <li><i class="bx bx-chevron-right"></i> <a href="{% url 'financial_planner-home' %}">Home</a></li>
+                <li><i class="bx bx-chevron-right"></i> <a href="{% url 'financial_planner-about' %}">About us</a></li>
+                <li><i class="bx bx-chevron-right"></i> <a href="{% url 'financial_planner-portfolio-list' %}">Portfolio</a></li>
+                <li><i class="bx bx-chevron-right"></i> <a href="{% url 'financial_planner-stock-search' %}">Stock Search</a></li>
+                <li><i class="bx bx-chevron-right"></i> <a href="{% url 'financial_planner-fund-search' %}">Funds</a></li>
+              </ul>
+            </div>
+            <!-- <div class="col-lg-3 footer-links">
+              <h4>Our Social Networks</h4>
+              <div class="social-links mt-3">
+                <a href="#" class="twitter"><i class="bx bxl-twitter"></i></a>
+                <a href="#" class="facebook"><i class="bx bxl-facebook"></i></a>
+                <a href="#" class="instagram"><i class="bx bxl-instagram"></i></a>
+                <a href="#" class="google-plus"><i class="bx bxl-skype"></i></a>
+                <a href="#" class="linkedin"><i class="bx bxl-linkedin"></i></a>
+              </div>
+            </div> -->
+
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+  <a href="#" class="back-to-top"><i class="icofont-simple-up"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{%static 'financial_planner/assets/vendor/jquery/jquery.min.js'%}"></script>
+  <script src="{%static 'financial_planner/assets/vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+  <script src="{%static 'financial_planner/assets/vendor/jquery.easing/jquery.easing.min.js'%}"></script>
+  <script src="{%static 'financial_planner/assets/vendor/php-email-form/validate.js'%}"></script>
+  <script src="{%static 'financial_planner/assets/vendor/jquery-sticky/jquery.sticky.js'%}"></script>
+  <script src="{%static 'financial_planner/assets/vendor/isotope-layout/isotope.pkgd.min.js'%}"></script>
+  <script src="{%static 'financial_planner/assets/vendor/venobox/venobox.min.js'%}"></script>
+  <script src="{%static 'financial_planner/assets/vendor/owl.carousel/owl.carousel.min.js'%}"></script>
+  <script src="{%static 'financial_planner/assets/vendor/aos/aos.js'%}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{%static 'financial_planner/assets/js/main.js'%}"></script>
+
+</body>
+
+</html>

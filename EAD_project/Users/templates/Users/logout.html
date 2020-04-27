@@ -1,0 +1,11 @@
+{% extends "financial_planner/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <section>
+        <div class = "text-center"><h4>You have been logged out.</h4></div>
+        <div class = "text-center">
+            <a href = "{% url 'login' %}">Log In Again</a>
+        </div>
+    </section>
+    
+{% endblock content %} 

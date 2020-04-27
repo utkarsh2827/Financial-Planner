@@ -1,0 +1,93 @@
+{% extends "financial_planner/base.html" %}
+{% load mathfilters %}
+{% load profit %}
+{% block content %}
+
+<section id="faq" class="faq">
+  <div class="container">
+
+    <div class="section-title" data-aos="fade-down">
+      <span>Portfolio</span>
+      <h2>Portfolio</h2>
+    </div> 
+    <div class="faq-list">
+      <div style ="display: flex; justify-content: space-between;">
+        <span><h5>Stocks</h5></span>
+        <span><a class = "btn btn-outline-secondary float-right" href = "{% url 'financial_planner-stock-search' %}">+</a></span>
+        
+      </div>
+      <div>
+      <ul>
+        {%for object in Stock%}
+          <li data-aos="fade-up">
+            <a data-toggle="collapse" class="collapsed" href="#a{{object.id}}" aria-expanded="false" >{{object.name}}  |  {{object.symbol}}<i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+            <div id="a{{object.id}}" class="collapse show" aria-labelledby="h{{object.id}}" data-parent=".faq-list">
+              <p>
+                <span>
+                  <strong>Initial Price: </strong>
+                </span>
+                <span id ="initial_price">
+                  {{object.initial_price}}
+                </span>
+                <span class = "float-right">
+                  <strong>No. Of Stocks Owned: </strong>{{object.quantity_owned}}
+                </span>
+              </p>
+              <p>
+                <span>
+                  <strong>Money Invested: </strong>
+                </span>
+                <span id = "investment">
+                  {{object.quantity_owned | mul:object.initial_price }}
+                </span>
+              </p>
+              <p>
+                <span>
+                  <strong>Profit: </strong> 
+                </span>
+                <span id = "profit">
+                  {{object|profit }}
+                </span>
+                <span>
+                  <a href="{% url 'stock-update' object.id %}" class = "btn btn-primary float-right btn-sm">Update</a>
+                  &nbsp;
+                  <a href="{% url 'stock-delete' object.id %}" class = "btn btn-danger float-right btn-sm">Delete</a>
+                </span>
+              </p>
+              
+            </div>
+          </li>
+        
+      {% endfor %}
+      </ul>
+    
+      <div>
+        <span id = "Profit"></span>
+      </div>
+    </div>
+    </div>
+    
+    <script>
+      var l = [];
+      {%for object in Stock%}
+        l.push({{object|profit}});
+      {% endfor %}
+      var profit = 0;
+      for(var i = 0;i<l.length;i++){
+        profit+=l[i];
+      }
+      var span = document.getElementById('Profit');
+      if(profit>=0){
+        span.innerHTML = "Your total profit : "+ profit + " USD.";
+        span.className = "container rounded bg-success text-white mx-auto";
+      }
+      else{
+        profit = profit*-1;
+        span.innerHTML = "Your total loss  : "+ profit + " USD.";
+        span.className = "container bg-danger text-white";
+      }
+    </script>
+    </div>
+  </div>
+ </section> 
+{% endblock content %}

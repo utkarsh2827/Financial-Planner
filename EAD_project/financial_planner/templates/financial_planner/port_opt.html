@@ -1,0 +1,107 @@
+{% extends "financial_planner/base.html" %}
+{% load static %}
+{% block content %}
+    <section>
+        
+        <div class = "container">
+            <div class="section-title" data-aos="fade-down">
+                <span>Optimise Your Stock Selection</span>
+                <h2>Optimise Your Stock Selection</h2>
+              </div> 
+            <form id = "stock-input">
+                <div class="form-group">
+                    <label for="list-of-stocks">Enter Stocks Desired</label>
+                    <input id = "stocks"class="form-control form-control-lg" type="text" placeholder="AAPL GOOG FB">
+                    <small id="Help" class="form-text text-muted">Enter Stock Symbols in Capital and separated by a Space.
+                        <br>
+                        The Stocks are allotted weights according <strong>Markovitz Portfolio Selection Model</strong> and maximization of Sharpe Ratio.
+                    </small>
+                </div>
+                <div class="form-group">
+                    <input id = "optimise" class="btn btn-dark" type="submit" value="Optimise">
+                </div>
+            </form>
+        
+        </div>
+        <figure class="highcharts-figure">
+            <img id = "load" src="{%static 'financial_planner/Infinity-1s-61px.gif'%}" class = "rounded mx-auto d-block" style = "visibility: hidden;">
+            <div id="pie_chart"></div>
+            <p id = "answer" class = "text-center"></p>
+        </figure>
+
+    </section>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script type = "text/javascript">
+        $("#optimise").click(function(e){
+            var bla = document.getElementsByClassName('highcharts-data-table');
+            if(bla.length>0){
+                bla[0].remove();
+            }
+            console.log('here')
+            e.preventDefault();
+            $.ajax({
+                type: "GET",
+                url : '/optimise/',
+                timeout: 50000,
+                beforeSend: function(){
+                    $("#load").css('visibility','visible');
+                },
+                data: {
+                    stock_list: $("#stocks").val()
+                },
+                success: function makechart(json){
+                    var d = json['data']
+                    $("#load").css('visibility','hidden');
+                    Highcharts.chart('pie_chart', {
+                        chart: {
+                            plotBackgroundColor: null,
+                            plotBorderWidth: null,
+                            plotShadow: false,
+                            type: 'pie'
+                        },
+                        title: {
+                            text: 'Diversification Of Portfolio'
+                        },
+                        tooltip: {
+                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                        },
+                        accessibility: {
+                            point: {
+                                valueSuffix: '%'
+                            }
+                        },
+                        plotOptions: {
+                            pie: {
+                                allowPointSelect: true,
+                                cursor: 'pointer',
+                                dataLabels: {
+                                    enabled: true,
+                                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                                }
+                            }
+                        },
+                        series: [{
+                            name: 'Stocks',
+                            colorByPoint: true,
+                            data : d
+                        }] 
+                    });
+                    var html = `
+                        
+                        Expected annual return: ${json['performance'][0]*100}%<br>
+                        Annual volatility: ${json['performance'][1]*100}%<br>
+                        Sharpe Ratio: ${json['performance'][2]}<br>
+                    
+                    `
+                    $("#answer").html(html) ;
+                },
+                error: console.log("ERROR")
+
+            });
+        })
+    </script>
+{% endblock content %}

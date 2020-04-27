@@ -1,0 +1,309 @@
+{% extends "financial_planner/base.html" %}
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title"><a href = "{{info.website}}"><strong>{{symbol}}|{{name}}</strong></a></h4>
+    <div>
+      <span id = "price"><h5><strong>{{curr_price}} USD </strong></h5></span>
+      <p>
+        <span>Previous Close: {{info.previousClose}} USD | Open: {{info.open}} USD</span>
+        <span class= "float-right">
+          <a class ="btn btn-outline-success" href="{%url 'stock-create' symbol name 'MAIN_PORTFOLIO' %}">Add to Portfolio</a>
+        </span>
+      </p>
+    </div>
+    <nav class = "border-bottom-0">
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link active" id="nav-summary-tab" data-toggle="tab" href="#nav-summary" role="tab" aria-controls="nav-home" aria-selected="true">Summary</a>
+        <a class="nav-item nav-link" id="nav-holders-tab" data-toggle="tab" href="#nav-chart" role="tab" aria-controls="nav-chart" aria-selected="false">OHLC Graph</a>
+        <a class="nav-item nav-link" id="nav-financials-tab" data-toggle="tab" href="#nav-financials" role="tab" aria-controls="nav-profile" aria-selected="false">Financials</a>
+        <a class="nav-item nav-link" id="nav-historical-tab" data-toggle="tab" href="#nav-historical" role="tab" aria-controls="nav-historical" aria-selected="false">Current Month's Data</a>
+        <a class="nav-item nav-link" id="nav-recommendations-tab" data-toggle="tab" href="#nav-recommendations" role="tab" aria-controls="nav-recommendations" aria-selected="false">Recommendations</a>
+        <a class="nav-item nav-link" id="nav-holders-tab" data-toggle="tab" href="#nav-holders" role="tab" aria-controls="nav-holders" aria-selected="false">Holders</a>
+      </div>
+    </nav>
+  </div>
+</div>
+<section>
+  <div class = "container">
+    <div class="tab-content" id="nav-tabContent">
+      <div class="tab-pane fade show active" id="nav-summary" role="tabpanel" aria-labelledby="nav-home-tab">   
+        <h5>Long Business Summary</h5>
+        <p id = "longsum">{{info.longBusinessSummary}}</p>
+        <p></p>
+        <h5>Company Information</h5>
+        <table class ="table table-bordered table-striped">
+          <tr>
+            <td>Sector</td>
+            <td>{{info.sector}}</td>
+          </tr>
+          <tr>
+            <td>City</td>
+            <td>{{info.city}}</td>
+          </tr>
+          <tr>
+            <td>Country</td>
+            <td>{{info.country}}</td>
+          </tr>
+          <tr>
+            <td>Market</td>
+            <td>{{info.market}}</td>
+          </tr>
+          <tr>
+            <td>Website</td>
+            <td>{{info.website}}</td>
+          </tr>
+          <tr>
+            <td>Dividend Rate</td>
+            <td>{{info.dividendRate}}</td>
+          </tr>
+          <tr>
+            <td>Forward PE</td>
+            <td>{{info.forwardPE}}</td>
+          </tr>
+          <tr>
+            <td>Trailing PE</td>
+            <td>{{info.trailingPE}}</td>
+          </tr>
+          <tr>
+            <td>Regular Market Open</td>
+            <td>{{info.regularMarketOpen}}</td>
+          </tr>
+          <tr>
+            <td>Fifty Day Average</td>
+            <td>{{info.fiftyDayAverage}}</td>
+          </tr>
+          <tr>
+            <td>Two Hundred Day Average</td>
+            <td>{{info.twoHundredDayAverage}}</td>
+          </tr>
+          <tr>
+            <td>Payout Ratio</td>
+            <td>{{info.payoutRatio}}</td>
+          </tr>
+          <tr>
+            <td>Regular Market Day High</td>
+            <td>{{info.regularMarketDayHigh}}</td>
+          </tr>
+          <tr>
+            <td>Profit Margins</td>
+            <td>{{info.profitMargins}}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="tab-pane fade show active" id="nav-chart" role="tabpanel" aria-labelledby="nav-chart-tab">
+        <div id = "closeChart" class = "chart"></div>
+      </div>
+      <div class="tab-pane fade" id="nav-financials" role="tabpanel" aria-labelledby="nav-profile-tab">
+        <table class = "table table-bordered table-striped" id = "financials">
+          <thead class = "thead-dark">
+            <tr>
+              <th data-field="Area of Expense">Area of Expense</th>
+              <th data-field="2020-03-31 00:00:00">2020</th>
+              <th data-field="2019-03-31 00:00:00">2019</th>
+              <th data-field="2018-03-31 00:00:00">2018</th>
+              <th data-field="2017-03-31 00:00:00">2017</th>
+            </tr>
+        </thead>
+          {% for row in financials %}
+            <tr>
+              {%for value in row.values%}
+                <td>{{value}}</td>
+              {%endfor%}
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="tab-pane fade" id="nav-historical" role="tabpanel" aria-labelledby="nav-historical-tab">
+        
+        <table class = "table table-bordered table-striped" id = "historical">
+          <thead class = "thead-dark">
+            <tr>
+              <th>Date</th>
+              <th>Open</th>
+              <th>High</th>
+              <th>Low</th>
+              <th>Close</th>
+              <th>Volume</th>
+            </tr>
+        </thead>
+          {% for row in historical_data %}
+            <tr>
+              {%for value in row.values%}
+                <td>{{value}}</td>
+              {%endfor%}
+            </tr>
+          {% endfor %}
+        </table>
+        
+      </div>
+      <div class="tab-pane fade" id="nav-recommendations" role="tabpanel" aria-labelledby="nav-recommendations-tab">
+        <table class = "table table-bordered table-striped" id = "recommendations">
+          <thead class = "thead-dark">
+            <tr>
+              <th>Firm</th>
+              <th>To Grade</th>
+              <th>From Grade</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in recommendations %}
+              <tr>
+                {%for value in row.values%}
+                  <td>{{value}}</td>
+                {%endfor%}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-pane fade" id="nav-holders" role="tabpanel" aria-labelledby="nav-holders-tab">
+        <div>
+          <h5>Major Holders</h5>
+          <table class = "table table-bordered table-striped" id = "holders">
+            {% for row in major_holders %}
+              <tr>
+                {%for value in row.values%}
+                  <td>{{value}}</td>
+                {%endfor%}
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+        <div>
+          <p>    </p>
+          <h5>Institute Holders</h5>
+          <table class = "table table-bordered table-striped" id = "instit_holders">
+            <thead class =" thead-dark">
+              <tr>
+                <th>Holders</th>
+                <th>Shares</th>
+                <th>Date Reported</th>
+                <th>% Out</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            {% for row in instit_holders %}
+              <tr>
+                {%for value in row.values%}
+                  <td>{{value}}</td>
+                {%endfor%}
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/stocktools/gui.css">
+<link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/annotations/popup.css">
+
+
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/data.js"></script>
+
+<script src="https://code.highcharts.com/stock/indicators/indicators-all.js"></script>
+<script src="https://code.highcharts.com/stock/modules/drag-panes.js"></script>
+
+<script src="https://code.highcharts.com/modules/annotations-advanced.js"></script>
+<script src="https://code.highcharts.com/modules/price-indicator.js"></script>
+<script src="https://code.highcharts.com/modules/full-screen.js"></script>
+
+<script src="https://code.highcharts.com/modules/stock-tools.js"></script>
+<script>
+  var url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+'{{symbol}}'+'&outputsize=full&apikey=0W6T3C4CI21913T8'
+  Highcharts.getJSON(url, function (data) {
+    data = data['Time Series (Daily)'];
+    var l = [];
+    var volume = [];
+    for( var i in data){
+      var date = Date.parse(i);
+      var m = [];
+      m.push(date);
+      for(var k in data[i]){
+        m.push(parseFloat(data[i][k]));
+      }
+      volume.push(m.pop());
+      l.push(m);
+    }
+    var ohlc = l;
+    ohlc.reverse();
+    volume.reverse();
+    
+    Highcharts.stockChart('closeChart', {
+        title:'{{symbol}} Stock Prices',
+        yAxis: [{
+            labels: {
+                align: 'left'
+            },
+            height: '80%',
+            resize: {
+                enabled: true
+            }
+        }, {
+            labels: {
+                align: 'left'
+            },
+            top: '80%',
+            height: '20%',
+            offset: 0
+        }],
+        tooltip: {
+            shape: 'square',
+            headerShape: 'callout',
+            borderWidth: 0,
+            shadow: false,
+            positioner: function (width, height, point) {
+                var chart = this.chart,
+                    position;
+
+                if (point.isHeader) {
+                    position = {
+                        x: Math.max(
+                            // Left side limit
+                            chart.plotLeft,
+                            Math.min(
+                                point.plotX + chart.plotLeft - width / 2,
+                                // Right side limit
+                                chart.chartWidth - width - chart.marginRight
+                            )
+                        ),
+                        y: point.plotY
+                    };
+                } else {
+                    position = {
+                        x: point.series.chart.plotLeft,
+                        y: point.series.yAxis.top - chart.plotTop
+                    };
+                }
+
+                return position;
+            }
+        },
+        series: [{
+            type: 'ohlc',
+            id: 'aapl-ohlc',
+            name: '{{symbol}} Stock Price',
+            data: ohlc
+        }],
+        responsive: {
+            rules: [{
+                condition: {
+                    maxWidth: 800
+                },
+                chartOptions: {
+                    rangeSelector: {
+                        inputEnabled: false
+                    }
+                }
+            }]
+        }
+    });
+  });
+</script>
+
+
+     
+{% endblock content %}
