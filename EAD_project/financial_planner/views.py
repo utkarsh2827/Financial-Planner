@@ -121,7 +121,7 @@ def about(request):
     return render(request, 'financial_planner/about.html',{})
 
 @login_required
-def stock_create(request,symbol,name,choice,price):
+def stock_create(request,symbol,name,choice):
     pk = 0
     obj = Stock(symbol = symbol, name = name, choice= choice,initial_price = curr_p(symbol), user = request.user)
     if choice =="MAIN_PORTFOLIO":
