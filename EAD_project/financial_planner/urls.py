@@ -16,6 +16,7 @@ urlpatterns = [
     path('stock/<int:pk>/', StockDetailView.as_view(), name = 'stock-detail'),
     path('about/', views.about, name = 'financial_planner-about'),
     path('search/', views.stock_search, name = 'financial_planner-stock-search'),
+    path('gethistory/<str:symbol>/<str:period>',views.get_history,name = 'history'),
     path('stock/<str:symbol>/<str:name>/<str:choice>',views.stock_create,name = 'stock-create'),
     path('stock/<int:pk>/update/', StockUpdateView.as_view(), name = 'stock-update'),
     path('stock/<int:pk>/delete/', StockDeleteView.as_view(), name = 'stock-delete'),
