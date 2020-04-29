@@ -1,7 +1,7 @@
 # Financial Planner
 
 ## Description
-
+**Financial Planner** is all you need to manage and organise your financial portfolio.This website keeps track of all your stock holdings and mutual funds and informs about your net profit/loss.The client can search for any no. of  stocks available on the major US stock exchanges like NYSE and Financial planner will give a detailed summary and customisable graph based on the historical data.The client can view all stocks held under My Portfolio. It also has a unique feature of optimising among various stock options in order to maximise your profit and help the investor reach his/her financial goals. This feature is based on Markovitz Portfolio Selection Model and maximization of Sharpe Ratio.
 
 ## Installation Guide
 Run below script in cmd or terminal after going in the respective directory:
