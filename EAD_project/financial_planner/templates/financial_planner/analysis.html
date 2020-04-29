@@ -18,7 +18,7 @@
         <a class="nav-item nav-link active" id="nav-summary-tab" data-toggle="tab" href="#nav-summary" role="tab" aria-controls="nav-home" aria-selected="true">Summary</a>
         <a class="nav-item nav-link" id="nav-holders-tab" data-toggle="tab" href="#nav-chart" role="tab" aria-controls="nav-chart" aria-selected="false">OHLC Graph</a>
         <a class="nav-item nav-link" id="nav-financials-tab" data-toggle="tab" href="#nav-financials" role="tab" aria-controls="nav-profile" aria-selected="false">Financials</a>
-        <a class="nav-item nav-link" id="nav-historical-tab" data-toggle="tab" href="#nav-historical" role="tab" aria-controls="nav-historical" aria-selected="false">Current Month's Data</a>
+        <a class="nav-item nav-link" id="nav-historical-tab" data-toggle="tab" href="#nav-historical" role="tab" aria-controls="nav-historical" aria-selected="false">Historical Data</a>
         <a class="nav-item nav-link" id="nav-recommendations-tab" data-toggle="tab" href="#nav-recommendations" role="tab" aria-controls="nav-recommendations" aria-selected="false">Recommendations</a>
         <a class="nav-item nav-link" id="nav-holders-tab" data-toggle="tab" href="#nav-holders" role="tab" aria-controls="nav-holders" aria-selected="false">Holders</a>
       </div>
@@ -118,6 +118,7 @@
       <div class="tab-pane fade" id="nav-historical" role="tabpanel" aria-labelledby="nav-historical-tab">
         <div class="btn-toolbar mx-auto" role="toolbar" aria-label="Toolbar with button groups">
           <div id = "butt_input" class="btn-group mr-2" role="group" aria-label="First group">
+            <button type="button" id = "1mo" class="btn btn-secondary" value = "1mo">1mo</button>
             <button type="button" id = "3mo" class="btn btn-secondary" value = "3mo">3mo</button>
             <button type="button" id = "1y" class="btn btn-secondary" value = "1y">1y</button>
             <button type="button" id = "5y" class="btn btn-secondary" value = "5y">5y</button>
@@ -329,7 +330,9 @@
   });
   }
 
-
+  document.getElementById('1mo').onclick = function(){
+    addTable('1mo');
+  }
   document.getElementById('3mo').onclick = function(){
     addTable('3mo');
   }
