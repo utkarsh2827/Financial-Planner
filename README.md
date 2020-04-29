@@ -30,6 +30,6 @@ Quit the server with CONTROL-C.
 Follow the link generated to access the website.
 
 ## Author
-**Utkarsh Nigam-----BE18103080**
-**Hardik Grover-----BE18103116**
+1. **Utkarsh Nigam-----BE18103080**
+2. **Hardik Grover-----BE18103116**
 
