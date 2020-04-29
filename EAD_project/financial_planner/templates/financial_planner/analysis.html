@@ -116,14 +116,16 @@
         </table>
       </div>
       <div class="tab-pane fade" id="nav-historical" role="tabpanel" aria-labelledby="nav-historical-tab">
-        <div class="btn-toolbar mx-auto" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
           <div id = "butt_input" class="btn-group mr-2" role="group" aria-label="First group">
             <button type="button" id = "1mo" class="btn btn-secondary" value = "1mo">1mo</button>
             <button type="button" id = "3mo" class="btn btn-secondary" value = "3mo">3mo</button>
             <button type="button" id = "1y" class="btn btn-secondary" value = "1y">1y</button>
             <button type="button" id = "5y" class="btn btn-secondary" value = "5y">5y</button>
             <button type="button" id = "max" class="btn btn-secondary" value = "max">max</button>
+            
           </div>
+          <button type="button" id ="csv" onclick = "blabla" class="btn btn-primary float-right" >Download Data in CSV Format</button>
         </div>
         <img id = "load" src="{%static 'financial_planner/Infinity-1s-61px.gif'%}" class = "rounded mx-auto d-block" style = "visibility: hidden;">
         <div id = "history"></div>
@@ -345,6 +347,55 @@
   document.getElementById('max').onclick = function(){
     addTable('max');
   }
+
+
+  function download_csv(csv, filename) {
+    var csvFile;
+    var downloadLink;
+
+    // CSV FILE
+    csvFile = new Blob([csv], {type: "text/csv"});
+
+    // Download link
+    downloadLink = document.createElement("a");
+
+    // File name
+    downloadLink.download = filename;
+
+    // We have to create a link to the file
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+
+    // Make sure that the link is not displayed
+    downloadLink.style.display = "none";
+
+    // Add the link to your DOM
+    document.body.appendChild(downloadLink);
+
+    // Lanzamos
+    downloadLink.click();
+}
+
+function export_table_to_csv(html, filename) {
+  var csv = [];
+  var rows = document.querySelectorAll("#historical tr");
+  
+    for (var i = 0; i < rows.length; i++) {
+    var row = [], cols = rows[i].querySelectorAll("td, th");
+    
+        for (var j = 0; j < cols.length; j++) 
+            row.push(cols[j].innerText);
+        
+    csv.push(row.join(","));    
+  }
+
+    // Download CSV
+    download_csv(csv.join("\n"), filename);
+}
+
+document.querySelector("#csv").addEventListener("click", function () {
+    var html = document.querySelector("#historical").outerHTML;
+  export_table_to_csv(html, "table.csv");
+});
   
 </script>
 
