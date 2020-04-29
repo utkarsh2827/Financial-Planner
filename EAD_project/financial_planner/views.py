@@ -10,7 +10,7 @@ from django.views.generic import (
 from .fund_interaction import *
 from .forms import *
 import yfinance as yf
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from .alpha_vantage_interaction import *
@@ -48,18 +48,6 @@ def stock_analysis_page(request,symbol,name):
     df_it = stock.institutional_holders
     df_it['Date Reported'] = df_it["Date Reported"].astype('str')
     df_it= json.loads(df_it.to_json(orient ='records'))
-    df_h = stock.history(period = '1mo').reset_index().loc[:,['Date','Open','High','Low','Close','Volume']]
-    df_h = df_h.iloc[::-1]
-    df_h['Date'] = df_h['Date'].astype('str')
-    chart_data = df_h.loc[:,['Date','Close']]
-    la = chart_data.Date.tolist()
-    de =  chart_data.Close.tolist()
-    data = [[la[i],de[i]] for i in range(len(de))]
-    chart_dict = {
-        'data':data
-    }
-    
-    df_h= json.loads(df_h.to_json(orient ='records'))
     context = {
         'symbol' : symbol,
         'name' : name,
@@ -67,10 +55,8 @@ def stock_analysis_page(request,symbol,name):
         'info':stock.info,
         'financials': df,
         'recommendations':df_recom,
-        'historical_data': df_h,
         'major_holders': df_mh,
-        'instit_holders': df_it,
-        'chart_data':chart_dict
+        'instit_holders': df_it
     }
     return render(request,'financial_planner/analysis.html', context)
 class StockDetailView(LoginRequiredMixin,DetailView):
@@ -140,6 +126,28 @@ def stock_create(request,symbol,name,choice):
         return redirect('financial_planner-portfolio-list')
 def recommend(request):
     return render(request,'financial_planner/port_opt.html',{})
+
+def get_history(request,symbol,period):
+    print(period)
+    df = yf.download(tickers=symbol, period =period,auto_adjust = True)
+    df = df.iloc[::-1]
+    # print(df.head())
+    # df['Date'] = df['Date'].astype('str')
+    df = df.to_html(table_id = 'historical')
+    s = ''
+    if period == '1mo':
+        s = '1 Month data'
+    elif period == '3mo':
+        s = '3 Months data'
+    elif period == '1y':
+        s = '1 Year data'
+    elif period == '5y':
+        s = '5 years data'
+    else:
+        s = 'Max data'
+    df = f'<h5 id = "headline">{s}</h5><br>'+df
+    return HttpResponse(df)
+
 def port_opt(request):
     l = request.GET['stock_list']
     from .portfolio_opt import get_result
