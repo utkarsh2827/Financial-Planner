@@ -31,5 +31,5 @@ Follow the link generated to access the website.
 
 ## Author
 1. **Utkarsh Nigam-----BE18103080**
-2. **Hardik Grover-----BE18103116**
+2. **Hardik Grover------BE18103116**
 
