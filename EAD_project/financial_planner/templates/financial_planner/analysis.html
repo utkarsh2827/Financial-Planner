@@ -1,4 +1,5 @@
 {% extends "financial_planner/base.html" %}
+{%load static%}
 {% block content %}
 <div class="card">
   <div class="card-body">
@@ -115,27 +116,16 @@
         </table>
       </div>
       <div class="tab-pane fade" id="nav-historical" role="tabpanel" aria-labelledby="nav-historical-tab">
-        
-        <table class = "table table-bordered table-striped" id = "historical">
-          <thead class = "thead-dark">
-            <tr>
-              <th>Date</th>
-              <th>Open</th>
-              <th>High</th>
-              <th>Low</th>
-              <th>Close</th>
-              <th>Volume</th>
-            </tr>
-        </thead>
-          {% for row in historical_data %}
-            <tr>
-              {%for value in row.values%}
-                <td>{{value}}</td>
-              {%endfor%}
-            </tr>
-          {% endfor %}
-        </table>
-        
+        <div class="btn-toolbar mx-auto" role="toolbar" aria-label="Toolbar with button groups">
+          <div id = "butt_input" class="btn-group mr-2" role="group" aria-label="First group">
+            <button type="button" id = "3mo" class="btn btn-secondary" value = "3mo">3mo</button>
+            <button type="button" id = "1y" class="btn btn-secondary" value = "1y">1y</button>
+            <button type="button" id = "5y" class="btn btn-secondary" value = "5y">5y</button>
+            <button type="button" id = "max" class="btn btn-secondary" value = "max">max</button>
+          </div>
+        </div>
+        <img id = "load" src="{%static 'financial_planner/Infinity-1s-61px.gif'%}" class = "rounded mx-auto d-block" style = "visibility: hidden;">
+        <div id = "history"></div>
       </div>
       <div class="tab-pane fade" id="nav-recommendations" role="tabpanel" aria-labelledby="nav-recommendations-tab">
         <table class = "table table-bordered table-striped" id = "recommendations">
@@ -302,6 +292,57 @@
         }
     });
   });
+
+  var url_d = "/gethistory/{{symbol}}"
+  window.onload = function(event){
+    addTable();
+  };
+
+  function addTable(period = '1mo'){
+    url = url_d+'/'+period;
+    // console.log(url)
+    $.ajax({
+    type: "GET",
+    url : url,
+    timeout: 50000,
+    beforeSend: function(){
+        $("#load").css('visibility','visible');
+    },
+    converters: {
+      'text json': true
+    },
+    success: function(data){
+      $("#load").css('visibility','hidden');
+      var table = document.getElementById('historical');
+      var headline = document.getElementById('headline');
+      if(table != null){
+        table.remove();
+        headline.remove();
+      }
+      // console.log(data);
+      $('#history').append(data);
+
+      $('#historical').removeClass('dataframe');
+      $('#historical').addClass('table table-striped table-bordered flexy');
+      $('#historical thead').addClass('thead-dark');
+    }
+  });
+  }
+
+
+  document.getElementById('3mo').onclick = function(){
+    addTable('3mo');
+  }
+  document.getElementById('1y').onclick = function(){
+    addTable('1y');
+  }
+  document.getElementById('5y').onclick = function(){
+    addTable('5y');
+  }
+  document.getElementById('max').onclick = function(){
+    addTable('max');
+  }
+  
 </script>
 
 
