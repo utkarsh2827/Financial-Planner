@@ -20,7 +20,8 @@
       <ul>
         {%for object in Stock%}
           <li data-aos="fade-up">
-            <a data-toggle="collapse" class="collapsed" href="#a{{object.id}}" aria-expanded="false" >{{object.name}}  |  {{object.symbol}}<i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+            <a data-toggle="collapse" class="collapsed" href="#a{{object.id}}" aria-expanded="false" >
+              {{object.name}}  |  {{object.symbol}}<i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
             <div id="a{{object.id}}" class="collapse show" aria-labelledby="h{{object.id}}" data-parent=".faq-list">
               <p>
                 <span>
@@ -40,6 +41,7 @@
                 <span id = "investment">
                   {{object.quantity_owned | mul:object.initial_price }}
                 </span>
+                
               </p>
               <p>
                 <span>
@@ -52,6 +54,8 @@
                   <a href="{% url 'stock-update' object.id %}" class = "btn btn-primary float-right btn-sm">Update</a>
                   &nbsp;
                   <a href="{% url 'stock-delete' object.id %}" class = "btn btn-danger float-right btn-sm">Delete</a>
+                  <a href="/analysis/{{object.symbol}}/{{object.name}}"class = "btn btn-secondary float-right btn-sm">Go to Analysis</a>
+                </span>
                 </span>
               </p>
               
