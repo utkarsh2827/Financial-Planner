@@ -107,7 +107,7 @@
             </li>
             <li class = "drop-down"><a href="">Search</a>
               <ul>
-                <li><a href="{% url 'financial_planner-stock-search' %}">Stock</a></li>
+                <li><a href="{% url 'financial_planner-stock-search' %}">Stocks</a></li>
                 <li><a href="{% url 'financial_planner-fund-search' %}">Mutual Funds</a></li>
               </ul>
             </li>
@@ -122,7 +122,47 @@
         </nav><!-- .nav-menu -->
       </div>
     </header><!-- End Header -->
+    <section id="services" class="services">
+        <div class="container">
 
+          <div class="section-title" data-aos="fade-down">
+            <span>Features</span>
+            <h2>Features</h2>
+            <p>At Financial Planner we provide you with following features to ensure best financial planning for our users</p>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="icon-box" data-aos="fade-up" data-aos-delay="100">
+                <i class="icofont-computer" style="color: #0ea5e0;"></i>
+                <h4><a href="{% url 'financial_planner-portfolio-list' %}">Your Portfolio</a></h4>
+                <p>Add/Update/Delete your stocks and track your profit/loss based on real-time prices.</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="icon-box" data-aos="fade-up" data-aos-delay="200">
+                <i class="icofont-chart-bar-graph" style="color: #07cc70;"></i>
+                <h4><a href="{% url 'financial_planner-stock-search' %}">Stock Search and Analysis</a></h4>
+                <p>Search for all the U.S. based stocks and view their Summary, OHLC graph, Historical Data, Various Finances and Holders of the Company Stocks and further look at the recommendations of various esteemed Institutions. </p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="icon-box" data-aos="fade-up" data-aos-delay="300">
+                <i class="icofont-settings" style="color: #e40373;"></i>
+                <h4><a href="{% url 'portfolio_opt' %}">Optimise Your Stock Selection</a></h4>
+                <p>Get help deciding how much to invest in which stock in your portfolio with maximum returns to volatility ratio.</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="icon-box" data-aos="fade-up" data-aos-delay="400">
+                <i class="icofont-tasks-alt" style="color: #f0b103;"></i>
+                <h4><a href="{% url 'financial_planner-fund-search' %}">Mutual Funds</a></h4>
+                <p>See the top performing mutual funds as listed by the renowned website Morningstar. </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       <!-- ======= Contact Us Section ======= -->
       <section id="contact" class="contact">
         <div class="container">
