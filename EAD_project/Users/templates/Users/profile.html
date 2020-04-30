@@ -2,6 +2,7 @@
 {% extends "financial_planner/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
+  <section>
     <div class="container">
       <div class="media">
         <img class="img-thumbnail account-img" src="{{ user.profile.image.url }}">
@@ -20,6 +21,7 @@
           <div class = "form-group">
               <button class = "btn btn-outline-info" type = "submit">Update</button>
           </div>
-    </form>
+      </form>
     </div>
+  </section>
 {% endblock content %}
