@@ -25,6 +25,18 @@ def curr_p(symbol):
     resp = resp.json()
     return float(resp['c'])
 
+def crypto_price(symbol):
+    params = {
+        "apikey": "OYMIDLPTGY6CAMP0",
+        "function": "CURRENCY_EXCHANGE_RATE",
+        "from_currency": symbol,
+        "to_currency": "USD"
+    }
+    resp = get(url, params)
+    resp = resp.json()
+
+    return float(resp['Realtime Currency Exchange Rate']['5. Exchange Rate'])
+
     
 
     

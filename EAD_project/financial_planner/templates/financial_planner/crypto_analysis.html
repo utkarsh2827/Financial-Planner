@@ -1,0 +1,133 @@
+{% extends "financial_planner/base.html" %}
+{%load static%}
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title"><a href = "{{info.website}}"><strong>{{symbol}}|{{name}}</strong></a></h4>
+    <div>
+      <span id = "price"><h5><strong>{{curr_price}} USD </strong></h5></span>
+      <p>
+        <span class= "float-right">
+          <a class ="btn btn-outline-success" href="{%url 'crypto-create' symbol name 'MAIN_PORTFOLIO' %}">Add to Portfolio</a>
+        </span>
+      </p>
+    </div>
+  </div>
+</div>
+<section>
+  <div class = "container">
+    <div id = "closeChart" class = "chart"></div>
+  </div>
+</section>
+<link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/stocktools/gui.css">
+<link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/annotations/popup.css">
+
+
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/data.js"></script>
+
+<script src="https://code.highcharts.com/stock/indicators/indicators-all.js"></script>
+<script src="https://code.highcharts.com/stock/modules/drag-panes.js"></script>
+
+<script src="https://code.highcharts.com/modules/annotations-advanced.js"></script>
+<script src="https://code.highcharts.com/modules/price-indicator.js"></script>
+<script src="https://code.highcharts.com/modules/full-screen.js"></script>
+
+<script src="https://code.highcharts.com/modules/stock-tools.js"></script>
+<script>
+  var url = 'https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol='+'{{symbol}}'+'&market=USD&apikey=NOBPQ2OPX7E1XRT3'
+  Highcharts.getJSON(url, function (data) {
+    data = data['Time Series (Digital Currency Daily)'];
+    var l = [];
+    var volume = [];
+    for( var i in data){
+      var date = Date.parse(i);
+      var m = [];
+      m.push(date);
+      var ugh = ["1a. open (USD)", "2a. high (USD)", "3a. low (USD)", "4a. close (USD)", "5. volume"];
+      for(var k = 0; k<5; k++ ){
+        m.push(parseFloat(data[i][ugh[k]]));
+      }
+      volume.push(m.pop());
+      l.push(m);
+    }
+    var ohlc = l;
+    ohlc.reverse();
+    volume.reverse();
+    
+    Highcharts.stockChart('closeChart', {
+        title:'{{symbol}} Exchange Rate',
+        yAxis: [{
+            labels: {
+                align: 'left'
+            },
+            height: '80%',
+            resize: {
+                enabled: true
+            }
+        }, {
+            labels: {
+                align: 'left'
+            },
+            top: '80%',
+            height: '20%',
+            offset: 0
+        }],
+        tooltip: {
+            shape: 'square',
+            headerShape: 'callout',
+            borderWidth: 0,
+            shadow: false,
+            positioner: function (width, height, point) {
+                var chart = this.chart,
+                    position;
+
+                if (point.isHeader) {
+                    position = {
+                        x: Math.max(
+                            // Left side limit
+                            chart.plotLeft,
+                            Math.min(
+                                point.plotX + chart.plotLeft - width / 2,
+                                // Right side limit
+                                chart.chartWidth - width - chart.marginRight
+                            )
+                        ),
+                        y: point.plotY
+                    };
+                } else {
+                    position = {
+                        x: point.series.chart.plotLeft,
+                        y: point.series.yAxis.top - chart.plotTop
+                    };
+                }
+
+                return position;
+            }
+        },
+        series: [{
+            type: 'ohlc',
+            id: 'aapl-ohlc',
+            name: '{{symbol}} Exchange Rate',
+            data: ohlc
+        }],
+        responsive: {
+            rules: [{
+                condition: {
+                    maxWidth: 800
+                },
+                chartOptions: {
+                    rangeSelector: {
+                        inputEnabled: false
+                    }
+                }
+            }]
+        }
+    });
+  });
+  
+</script>
+
+
+     
+{% endblock content %}

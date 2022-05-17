@@ -1,6 +1,7 @@
 {% extends "financial_planner/base.html" %}
 {% load mathfilters %}
 {% load profit %}
+{% load crypto_profit %}
 {% block content %}
 
 <section id="faq" class="faq">
@@ -18,17 +19,17 @@
       </div>
       <div>
       <ul>
-        {%for object in Stock%}
+        {%for object in Stock.values%}
           <li data-aos="fade-up">
             <a data-toggle="collapse" class="collapsed" href="#a{{object.id}}" aria-expanded="false" >
               {{object.name}}  |  {{object.symbol}}<i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
             <div id="a{{object.id}}" class="collapse show" aria-labelledby="h{{object.id}}" data-parent=".faq-list">
               <p>
                 <span>
-                  <strong>Initial Price: </strong>
+                  <strong>Average Buy Price: </strong>
                 </span>
                 <span id ="initial_price">
-                  {{object.initial_price}}
+                  {{object.average_price}}
                 </span>
                 <span class = "float-right">
                   <strong>No. Of Stocks Owned: </strong>{{object.quantity_owned}}
@@ -39,21 +40,21 @@
                   <strong>Money Invested: </strong>
                 </span>
                 <span id = "investment">
-                  {{object.quantity_owned | mul:object.initial_price }}
+                  {{object.quantity_owned | mul:object.average_price }}
                 </span>
                 
               </p>
               <p>
                 <span>
-                  <strong>Profit: </strong> 
+                  <strong>Current Value of Investment: </strong> 
                 </span>
                 <span id = "profit">
                   {{object|profit }}
                 </span>
                 <span>
-                  <a href="{% url 'stock-update' object.id %}" class = "btn btn-primary float-right btn-sm">Update</a>
+                  <a href="{% url 'stock-update' object.id %}" class = "btn btn-primary float-right btn-sm">Buy</a>
                   &nbsp;
-                  <a href="{% url 'stock-delete' object.id %}" class = "btn btn-danger float-right btn-sm">Delete</a>
+                  <a href="{% url 'stock-delete' object.id %}" class = "btn btn-danger float-right btn-sm">Sell</a>
                   <a href="/analysis/{{object.symbol}}/{{object.name}}"class = "btn btn-secondary float-right btn-sm">Go to Analysis</a>
                 </span>
                 </span>
@@ -64,17 +65,74 @@
         
       {% endfor %}
       </ul>
+    </div>
+    <div class="faq-list-crypto">
+      <div style ="display: flex; justify-content: space-between;">
+        <span><h5>Crypto Assets</h5></span>
+        <span><a class = "btn btn-outline-secondary float-right" href = "{% url 'financial_planner-crypto-search' %}">+</a></span>
+        
+      </div>
+      <div>
+      <ul>
+        {%for object in Funds.values%}
+          <li data-aos="fade-up">
+            <a data-toggle="collapse" class="collapsed" href="#a{{object.id}}" aria-expanded="false" >
+              {{object.name}}  |  {{object.symbol}}<i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+            <div id="a{{object.id}}" class="collapse show" aria-labelledby="h{{object.id}}" data-parent=".faq-list">
+              <p>
+                <span>
+                  <strong>Average Buy Price: </strong>
+                </span>
+                <span id ="cinitial_price">
+                  {{object.average_price}}
+                </span>
+                <span class = "float-right">
+                  <strong>No. Of Stocks Owned: </strong>{{object.quantity_owned}}
+                </span>
+              </p>
+              <p>
+                <span>
+                  <strong>Money Invested: </strong>
+                </span>
+                <span id = "cinvestment">
+                  {{object.quantity_owned | mul:object.average_price }}
+                </span>
+                
+              </p>
+              <p>
+                <span>
+                  <strong>Current Value of Investment: </strong> 
+                </span>
+                <span id = "cprofit">
+                  {{object|cprofit }}
+                </span>
+                <span>
+                  <a href="{% url 'funds-update' object.id %}" class = "btn btn-primary float-right btn-sm">Buy</a>
+                  &nbsp;
+                  <a href="{% url 'funds-delete' object.id %}" class = "btn btn-danger float-right btn-sm">Sell</a>
+                  <a href="/canalysis/{{object.symbol}}/{{object.name}}"class = "btn btn-secondary float-right btn-sm">Go to Analysis</a>
+                </span>
+                </span>
+              </p>
+            </div>
+          </li>
+        
+      {% endfor %}
+      </ul>
     
       <div>
         <span id = "Profit"></span>
       </div>
     </div>
-    </div>
+  </div>
     
     <script>
       var l = [];
-      {%for object in Stock%}
-        l.push({{object|profit}});
+      {%for object in Stock.values%}
+        l.push({{object|profit}}-{{object.quantity_owned | mul:object.average_price }});
+      {% endfor %}
+      {%for object in Funds.values%}
+        l.push({{object|cprofit}}-{{object.quantity_owned | mul:object.average_price }});
       {% endfor %}
       var profit = 0;
       for(var i = 0;i<l.length;i++){

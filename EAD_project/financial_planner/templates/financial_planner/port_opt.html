@@ -10,11 +10,30 @@
               </div> 
             <form id = "stock-input">
                 <div class="form-group">
+                    <label for="model_selection">Choose Optimization Model</label>
+                    <select id="model_selection" class="form-control form-control-lg">
+                        <option selected value="EF">Markovitz Portfolio Selection</option>
+                        <option value="H">Hierarchial Risk Parity</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="return_strategy">Choose Return Calculation Strategy</label>
+                    <select id="return_strategy" class="form-control form-control-lg">
+                        <option selected value="mean">Mean Historical Returns</option>
+                        <option value="BL">Black Litterman Model for Return Prediction</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="list-of-stocks">Enter Stocks Desired</label>
                     <input id = "stocks"class="form-control form-control-lg" type="text" placeholder="AAPL GOOG FB">
                     <small id="Help" class="form-text text-muted">Enter Stock Symbols in Capital and separated by a Space.
-                        <br>
-                        The Stocks are allotted weights according <strong>Markovitz Portfolio Selection Model</strong> and maximization of Sharpe Ratio.
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label for="prior-of-stocks">Enter Stock Priors</label>
+                    <input id = "priors"class="form-control form-control-lg" type="text" placeholder="0.20 0.14 0">
+                    <small id="Help_prior" class="form-text text-muted">
+                        Enter Stock Priors in Decimals and separated by a Space. Only applicable for Black Litterman Model
                     </small>
                 </div>
                 <div class="form-group">
@@ -51,7 +70,10 @@
                     $("#load").css('visibility','visible');
                 },
                 data: {
-                    stock_list: $("#stocks").val()
+                    stock_list: $("#stocks").val(),
+                    priors: $("#priors").val(),
+                    model: $('#model_selection').val(),
+                    return_strategy: $("#return_strategy").val(),
                 },
                 success: function makechart(json){
                     var d = json['data']

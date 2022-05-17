@@ -15,6 +15,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from .alpha_vantage_interaction import *
 import json
+import pandas as pd
 def home(request):
     return render(request, 'financial_planner/home.html',{})
 class PortfolioListView(LoginRequiredMixin, ListView):
@@ -25,12 +26,68 @@ class PortfolioListView(LoginRequiredMixin, ListView):
     ordering = ['-date_posted']
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['Stock'] = Stock.objects.filter(user = self.request.user)
-        print(context['Stock'])
-        context['Funds'] = Funds.objects.filter(user = self.request.user)
+        stocks = Stock.objects.filter(user = self.request.user)
+        context['Stock'] = {}
+        for stock in stocks:
+            if stock.symbol in context['Stock']:
+                context['Stock'][stock.symbol]['average_price'] = stock.initial_price * stock.quantity_owned + context['Stock'][stock.symbol]['average_price'] * context['Stock'][stock.symbol]['quantity_owned']
+                context['Stock'][stock.symbol]['average_price'] /= (context['Stock'][stock.symbol]['quantity_owned'] + stock.quantity_owned)
+                context['Stock'][stock.symbol]['quantity_owned'] += stock.quantity_owned
+                context['Stock'][stock.symbol]['average_price'] = round(context['Stock'][stock.symbol]['average_price'], 2)
+                continue
+            d = {}
+            d["id"] = stock.id
+            d['name'] = stock.name
+            d['symbol'] = stock.symbol
+            d['average_price'] = stock.initial_price
+            d['quantity_owned'] = stock.quantity_owned
+            d['curr_price'] = stock.curr_price
+
+            context['Stock'][stock.symbol] = d
+
+        stocks = Funds.objects.filter(user = self.request.user)
+        context['Funds'] = {}
+        for stock in stocks:
+            if stock.symbol in context['Funds']:
+                context['Funds'][stock.symbol]['average_price'] = stock.investment * stock.quantity_owned + context['Funds'][stock.symbol]['average_price'] * context['Funds'][stock.symbol]['quantity_owned']
+                context['Funds'][stock.symbol]['average_price'] /= (context['Funds'][stock.symbol]['quantity_owned'] + stock.quantity_owned)
+                context['Funds'][stock.symbol]['quantity_owned'] += stock.quantity_owned
+                context['Funds'][stock.symbol]['average_price'] = round(context['Funds'][stock.symbol]['average_price'], 2)
+                continue
+            d = {}
+            d["id"] = stock.id
+            d['name'] = stock.name
+            d['symbol'] = stock.symbol
+            d['average_price'] = stock.investment
+            d['quantity_owned'] = stock.quantity_owned
+            d['curr_price'] = stock.curr_price
+
+            context['Funds'][stock.symbol] = d
+
         return context
 def stock_search(request):
     return render(request,'financial_planner/stock_search.html',{})
+
+def crypto_search(request):
+    df = pd.read_csv('./media/digital_currency_list.csv')
+    l = []
+    for i in range(len(df)):
+        l.append({
+            "name": df.iloc[i, 1],
+            "symbol": df.iloc[i, 0]
+        })
+
+    return render(request, 'financial_planner/crypto_search.html', {"crypto_list": l})
+
+def crypto_analysis_page(request, symbol, name):
+    context = {
+        'symbol' : symbol,
+        'name' : name,
+        'curr_price': float(crypto_price(symbol))
+    }
+
+    return render(request,'financial_planner/crypto_analysis.html', context)
+
 def stock_analysis_page(request,symbol,name):
     stock = yf.Ticker(symbol)
     curr_price = curr_p(symbol)
@@ -77,7 +134,7 @@ class StockUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class FundsUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Funds
-    fields = ['investment']
+    fields = ['quantity_owned']
     def form_valid(self,form):
         form.instance.user = self.request.user
         return super().form_valid(form)
@@ -115,7 +172,7 @@ def stock_create(request,symbol,name,choice):
             s_form = StockCreationForm(request.POST, instance = obj)
             if s_form.is_valid():
                 s_form.save()
-                return redirect('financial_planner-home')
+                return redirect('financial_planner-portfolio-list')
         else:
             s_form = StockCreationForm(instance = obj)
         context = {
@@ -124,6 +181,26 @@ def stock_create(request,symbol,name,choice):
         return render(request,'financial_planner/stock_form.html',context)
     else:
         return redirect('financial_planner-portfolio-list')
+
+@login_required
+def crypto_create(request,symbol,name,choice):
+    pk = 0
+    obj = Funds(symbol = symbol, name = name, choice= choice, investment = crypto_price(symbol), user = request.user)
+    if choice =="MAIN_PORTFOLIO":
+        if request.method == "POST":
+            s_form = FundsCreationForm(request.POST, instance = obj)
+            if s_form.is_valid():
+                s_form.save()
+                return redirect('financial_planner-portfolio-list')
+        else:
+            s_form = FundsCreationForm(instance = obj)
+        context = {
+            'form':s_form
+        }
+        return render(request,'financial_planner/funds_form.html',context)
+    else:
+        return redirect('financial_planner-portfolio-list')
+
 def recommend(request):
     return render(request,'financial_planner/port_opt.html',{})
 
@@ -149,10 +226,22 @@ def get_history(request,symbol,period):
     return HttpResponse(df)
 
 def port_opt(request):
-    l = request.GET['stock_list']
+    stock_list = request.GET['stock_list'].split(" ")
+    prior_list = request.GET['priors'].split(" ")
+    model = request.GET['model']
+    return_strategy = request.GET['return_strategy']
+    payload = {}
+
+    for i in range(len(stock_list)):
+        if return_strategy == "mean" or len(prior_list) == 0:
+            payload[stock_list[i]] = 0
+        else:
+            payload[stock_list[i]] = float(prior_list[i])
+
     from .portfolio_opt import get_result
-    answer = get_result(l)
-    return JsonResponse(answer,safe = False)
+    answer = get_result(payload, model, return_strategy)
+    return JsonResponse(answer, safe = False)
+
 def fund_search(request):
     s = get_mf_list()
     context = {

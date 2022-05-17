@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
-from .alpha_vantage_interaction import curr_p
+from .alpha_vantage_interaction import curr_p, crypto_price
 class Stock(models.Model):
     WATCHLIST = 'W'
     MAIN_PORTFOLIO = 'P'
@@ -29,10 +29,15 @@ class Funds(models.Model):
         ("MAIN_PORTFOLIO",MAIN_PORTFOLIO)
     ]
     name = models.TextField()
-    type = models.CharField(max_length = 20)
+    symbol = models.CharField(max_length = 20)
     investment = models.DecimalField(max_digits=10,decimal_places=3,default = 0.0)
     choice = models.CharField(max_length = 20, choices = ENTITY_CHOICE)
     user = models.ForeignKey(User, on_delete = models.CASCADE)
+    quantity_owned = models.DecimalField(max_digits=25, decimal_places=10, default = 0)
+
+    @property
+    def curr_price(self):
+        return crypto_price(self.symbol)
 
 
 
